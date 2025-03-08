@@ -5,36 +5,17 @@
 {% block 'conteudo' %} 
 <div class="container">
     <br>
-    {% if status == '0' %}
-        <div class="alert alert-success" role="alert">
-            Usuário cadastrado com sucesso!
-      </div>
+    {% if messages %}
+        {% for i in messages %}
+            
+            <div class="alert {{i.tags}}" role="alert">
+                {{i}}
+            </div>
+        {% endfor %}
     {% endif %}
 
-    {% if status == '1' %}   
-        <div class="alert alert-danger" role="alert">
-            Nome ou email vazio!
-      </div>
-    {% endif %}
 
-    {% if status == '2' %}   
-        <div class="alert alert-danger" role="alert">
-            Senha não pode ter menos de 8 caracteres!
-        </div>
-    {% endif %}
-
-    {% if status == '3' %}   
-        <div class="alert alert-danger" role="alert">
-            Email já cadastrado!
-        </div>
-    {% endif %}
-
-    {% if status == '4' %}   
-        <div class="alert alert-danger" role="alert">
-            Erro interno do Sistema!
-        </div>
-    {% endif %}
-
+    
     <div class="row">
         <div class="col-md-3">
         </div>

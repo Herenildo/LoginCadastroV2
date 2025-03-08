@@ -5,23 +5,17 @@
 {% block 'conteudo' %} 
 <div class="container">
     <br>
-    {% if status == '2' %}
-        <div class="alert alert-success" role="alert">
-            Entre com o usuario e senha!
-      </div>
+
+    {% if messages %}
+        {% for i in messages %}
+            
+            <div class="alert {{i.tags}}" role="alert">
+                {{i}}
+            </div>
+        {% endfor %}
     {% endif %}
 
-    {% if status == '1' %}   
-        <div class="alert alert-warning" role="alert">
-            Usuario ou senha incorretos!
-      </div>
-    {% endif %}
-
-    {% if status == '3' %}   
-        <div class="alert alert-warning" role="alert">
-            Você ja fez logout no sistema!
-      </div>
-    {% endif %}
+    
     <div class="row">
         <div class="col-md-3">
         </div>
