@@ -6,8 +6,9 @@ from django.http import HttpResponse
 from .models import Usuarios
 from django.shortcuts import redirect
 from hashlib import sha256
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.contrib.messages import constants
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -32,21 +33,22 @@ def valida_cadastro (request):
     if not senha or len(senha) < 8:
         messages.add_message(request, constants.ERROR, 'Senha nao pode ter menos de 8 caracteres!')
         return redirect('/auth/cadastro/')
-    
+   
 
-
-    usuario = Usuarios.objects.filter(email=email)
-
-    if len(usuario) > 0:
+    if User.objects.filter(email=email).exists():
         messages.add_message(request, constants.ERROR, 'Email ja cadastrado!')
         return redirect('/auth/cadastro/')
     
+    if User.objects.filter(username=nome).exists():
+        messages.add_message(request, constants.ERROR, 'Nome ja cadastrado!')
+        return redirect('/auth/cadastro/')
+    
     try:
-        senha = sha256(senha.encode()).hexdigest()    
-
-        usuario = Usuarios(nome=nome, 
-                        email=email, 
-                        senha=senha)
+        usuario = User.objects.create_user(
+                                username=nome,
+                                email=email,
+                                password=senha
+        )
 
         usuario.save()
         messages.add_message(request, constants.SUCCESS, 'Usuário cadastrado com sucesso!')
@@ -57,20 +59,18 @@ def valida_cadastro (request):
         return redirect('/auth/cadastro/')
 
 def valida_login (request):
-    email = request.POST.get('email','').strip()
+    nome = request.POST.get('nome','').strip()
     senha = request.POST.get('senha','').strip()
     
+    usuario = auth.authenticate(request, username = nome, password = senha)
     
-    senha = sha256(senha.encode()).hexdigest() 
-    
-    usuario = Usuarios.objects.filter(email=email).filter(senha=senha)
     
 
-    if len(usuario) == 0:
-        messages.add_message(request, constants.ERROR, 'Usuário ou senha incorretos')
-    elif len(usuario) > 0:
-        request.session['logado'] = True
-        request.session['usuario'] = usuario[0].id
+    if not usuario:
+        messages.add_message(request, constants.WARNING, 'Usuário ou senha incorretos')
+        return redirect('/auth/login/')
+    else:
+        auth.login(request, usuario)
         return redirect('/plataforma/home/')
         
  
