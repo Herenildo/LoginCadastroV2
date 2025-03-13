@@ -13,11 +13,14 @@ from django.contrib.auth.models import User
 
 # Create your views here.
 def login (request):
-    messages.add_message(request,  constants.SUCCESS, 'Você foi logado com sucesso,Seja bem vindo!')
+    if request.user.is_authenticated:
+        return redirect('/plataforma/home/')
     status = request.GET.get('status')
     return render(request, 'login.html',{'status':status})
 
 def cadastro (request):
+    if request.user.is_authenticated:
+        return redirect('/plataforma/home/')
     status = request.GET.get('status')
     return render(request, 'cadastro.html', {'status':status})
 
@@ -76,16 +79,9 @@ def valida_login (request):
  
 
 def sair(request):
-    request.session.flush()
-    messages.add_message(request, constants.WARNING, 'Faá login antes de acessar a plataformar!')
+    auth.logout(request)
+    messages.add_message(request, constants.WARNING, 'Faça login antes de acessar a plataformar!')
     return redirect('/auth/login/')
-
-
-#    try:
-#        del request.session['logado']
-#        return redirect('/auth/login/')
-#    except KeyError:
-#        return redirect('auth/login/?status=3')
 
 
     
